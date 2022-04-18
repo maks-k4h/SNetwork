@@ -4,8 +4,18 @@
 Message::Message(const MessageID &messageId)
 : id {messageId} {}
 
-Message *Message::nextMessage() const noexcept {
+Message *Message::getNextMessage() const noexcept {
     return next;
+}
+
+void Message::setNextMessage(Message *message) {
+    if (!message)
+        return;
+    next = message;
+    if (id.isEmpty())
+        return;
+    next->id = id;
+    ++next->id;
 }
 
 Message *Message::getResponses() const noexcept {

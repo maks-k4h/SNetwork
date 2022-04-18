@@ -9,16 +9,16 @@ Server::~Server() {
 
 bool Server::loadData() {
     // generating random data for now
-    MessageFactory::setMessagesNum(10);
+    MessageFactory::setMessagesNum(3);
     MessageFactory::setLikesRange(0, 1000);
     MessageFactory::setResponsesRange(0, 6);
-    data = MessageFactory::createOneMessage();
+    data = MessageFactory::createMessageSet();
     return data != nullptr;
 }
 
 void Server::cleanData() {
     while (data) {
-        auto temp = data->nextMessage();
+        auto temp = data->getNextMessage();
         deleteMessage(data);
         data = temp;
     }
@@ -30,7 +30,7 @@ void Server::deleteMessage(Message *message) {
     auto responses = message->getResponses();
     delete message;
     while (responses) {
-        auto temp = responses->nextMessage();
+        auto temp = responses->getNextMessage();
         deleteMessage(responses);
         responses = temp;
     }
@@ -39,21 +39,36 @@ void Server::deleteMessage(Message *message) {
 bool Server::getMessageById(const MessageID& id, Message &m) const {
     if (id.isEmpty())
         return false;
+    auto message = messageById(id);
+    if (message)
+        m = *message;
+    return nullptr != message;
+}
+
+MessageID Server::addComment(std::string &&text, const MessageID &id) {
+    auto message = messageById(id);
+    if (!message) // no message with such id
+        return {};
+    auto response = new Message(0, text);
+    message->addResponse(response);
+    return response->getId();
+}
+
+Message *Server::messageById(const MessageID &id) const {
     size_t level = 0;
     auto message = data;
     while (message) {
         while (message && message->getId()[level] < id[level])
-            message = message->nextMessage();
+            message = message->getNextMessage();
         if (!message)
-            return false;
+            break;
         ++level;
         if (level == id.getLevelsNum()) {
-            m = *message;
-            return true;
+            return message;
         }
         message = message->getResponses();
     }
-    return false;
+    return nullptr;
 }
 
 

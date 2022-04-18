@@ -12,7 +12,6 @@
 class Client {
 public:
     Client();
-    // write a client that will print the whole server's data
     void run();
 
 private:
@@ -26,7 +25,8 @@ private:
     enum class Page {
         POST_,
         COMMENT_,
-        NEW_POST_
+        NEW_POST_,
+        EMPTY_
     };
     Page currentPage {Page::POST_};
 
@@ -37,6 +37,7 @@ private:
     enum class Command {
         HELP_,
         BACK_,
+        MORE_,
         QUIT_,
         COMMENT_,
         POST_,
@@ -49,9 +50,17 @@ private:
     Command currentCommand {Command::INVALID_};
 
     bool readCommand();
+    bool readBool(bool &res, const std::string & = "Y/n?") const;
     void processCommand();
 
     void doBack();
+    void doMore();
+    void doComment();
+    void doPost();
+    void doNext();
+    void doPrevious();
+    void doLike();
+    void doDislike();
 
     void printHelloMessage() const;
     void printHelpMessage() const;

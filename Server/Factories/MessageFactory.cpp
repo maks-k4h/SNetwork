@@ -74,6 +74,19 @@ Message *MessageFactory::createOneMessage() {
     return res;
 }
 
+Message *MessageFactory::createMessageSet() {
+    if (messNum < 1)
+        return nullptr;
+    auto res = createOneMessage();
+    auto curr = res;
+    for (size_t i = 1; i < messNum; ++i) {
+        curr->setNextMessage(createOneMessage());
+        curr = curr->getNextMessage();
+        curr->setId(i);
+    }
+    return res;
+}
+
 std::string MessageFactory::generateBodyText(size_t sentences) {
     std::string res;
     while (sentences--) {

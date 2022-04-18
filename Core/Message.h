@@ -15,7 +15,9 @@ public:
     Message(const Message &) = default;
     ~Message() = default;
 
-    Message *nextMessage() const noexcept;
+    // sets new id to passed message (if id of this was set)
+    void setNextMessage(Message *);
+    Message *getNextMessage() const noexcept;
     Message *getResponses() const noexcept;
     Message *getLastResponse() const noexcept;
 

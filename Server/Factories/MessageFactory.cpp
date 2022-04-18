@@ -97,7 +97,7 @@ std::string MessageFactory::generateBodyText(size_t sentences) {
 
 std::string MessageFactory::generateSentence() {
     std::string sentence = getRandomWord(true);
-    auto length = rand() % 15;
+    auto length = rand() % 8;
     while (length--)
         sentence += ' ' + getRandomWord(false);
     sentence += '.';

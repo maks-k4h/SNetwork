@@ -37,19 +37,12 @@ void Client::renderPostPage() const {
             std::cout << messagesStack[i].getText() << '\n';
             printCharLine(' ', 3 + i * 3);
             std::cout   << messagesStack[i].getLikes() << " likes, "
+                        << messagesStack[i].getDislikes() << " dislikes, "
                         << messagesStack[i].getResponsesNum() << " responses. "
                         << "ID: " << messagesStack[i].getId().toString()
                         << '\n';
         }
     }
-}
-
-void Client::renderCommentPage() const {
-
-}
-
-void Client::renderNewPostPage() const{
-
 }
 
 bool Client::readCommand() {
@@ -88,10 +81,10 @@ bool Client::readBool(bool &res, const std::string &m) const {
     std::cout << m << '\n';
     char c {};
     while (std::cout << "> " && std::cin.get(c)) {
+        for (char temp; std::cin.get(temp) && temp != '\n';);
         c = tolower(c);
         if (c !='y' && c != 'n') {
             std::cout << "Enter Y or n.\n";
-            while (std::cin.get(c) && c != '\n');
         } else {
             break;
         }
@@ -122,7 +115,6 @@ void Client::processCommand() {
         }
         case Command::QUIT_: {
             printGoodByeMessage();
-            currentPage = Page::EMPTY_;
             running = false;
             break;
         }
@@ -142,14 +134,14 @@ void Client::processCommand() {
             doPrevious();
             break;
         }
-//        case Command::LIKE_: {
-//            doLike();
-//            break;
-//        }
-//        case Command::DISLIKE_: {
-//            doDislike();
-//            break;
-//        }
+        case Command::LIKE_: {
+            doLike();
+            break;
+        }
+        case Command::DISLIKE_: {
+            doDislike();
+            break;
+        }
         default: {
             std::cout << "Processing of this command is not implemented yet!\n";
         }
@@ -157,23 +149,15 @@ void Client::processCommand() {
 }
 
 void Client::doBack() {
-    if (currentPage == Page::POST_) {
-        if (messagesStack.size() < 2) {
-            std::cout << "Cannot go back here.\n";
-        } else {
-            messagesStack.erase(messagesStack.end() - 1);
-            renderPostPage();
-        }
+    if (messagesStack.size() < 2) {
+        std::cout << "Cannot go back here.\n";
     } else {
-        std::cout << "Cannot go back here!\n";
+        messagesStack.erase(messagesStack.end() - 1);
+        renderPostPage();
     }
 }
 
 void Client::doMore() {
-    if (currentPage != Page::POST_) {
-        std::cout << "Cannot get more here!\n";
-        return;
-    }
     auto newID = (messagesStack.end() - 1)->getId();
     newID.addLevel(0);
     Message message;
@@ -186,54 +170,78 @@ void Client::doMore() {
 }
 
 void Client::doComment() {
-    if (currentPage == Page::POST_) {
-        std::cout << "Enter your response!\n";
-        std::string comment;
-        getline(std::cin, comment);
-        bool b;
-        if (!readBool(b, "Publish this comment (Y/n)?")) {
-            std::cout << "Something went wrong...\n";
-        } else {
-            if (b) {
-                auto resID = server.addComment(std::move(comment),
-                                  (messagesStack.end() - 1)->getId());
-                if (resID.isEmpty()) {
-                    std::cout << "Publishing denied!\n";
-                } else {
-                    Message commentMessage;
-                    if (!server.getMessageById(resID, commentMessage)) {
-                        std::cout << "Something went wrong!\n";
-                    } else {
-                        server.getMessageById(
-                                (messagesStack.end() - 1)->getId(),
-                                *(messagesStack.end() - 1));
-                        messagesStack.emplace_back(std::move(commentMessage));
-                        renderPostPage();
-                    }
-
-                }
-            } else {
-                std::cout << "Message discarded.\n";
-                renderPostPage();
-            }
-        }
-
+    std::cout << "Enter your response!\n";
+    std::string comment;
+    getline(std::cin, comment);
+    if (comment.empty()) {
+        std::cout << "It's alright, come back later...\n";
+        return;
+    }
+    bool b;
+    if (!readBool(b, "Publish this comment (Y/n)?")) {
+        std::cout << "Something went wrong...\n";
     } else {
-        std::cout << "You cannot leve a comment here!\n";
+        if (b) {
+            auto resID = server.addComment(std::move(comment),
+                              (messagesStack.end() - 1)->getId());
+            if (resID.isEmpty()) {
+                std::cout << "Publishing denied!\n";
+            } else {
+                Message commentMessage;
+                if (!server.getMessageById(resID, commentMessage)) {
+                    std::cout << "Something went wrong!\n";
+                } else {
+                    server.getMessageById(
+                            (messagesStack.end() - 1)->getId(),
+                            *(messagesStack.end() - 1));
+                    messagesStack.emplace_back(std::move(commentMessage));
+                    renderPostPage();
+                }
+
+            }
+        } else {
+            std::cout << "Message discarded.\n";
+            renderPostPage();
+        }
     }
 }
 
 void Client::doPost() {
-    std::cout << "Not implemented\n";
+    std::cout << "What's up? Tell us:\n";
+    std::string text;
+    std::getline(std::cin, text);
+    if (text.empty()) {
+        std::cout << "Could you be more specific? ;)\n";
+        return;
+    }
+    bool b;
+    if (!readBool(b, "Publish it (Y/n)?")) {
+        std::cout << "Something went wrong. :(\n";
+        return;
+    }
+    if (b) {
+        auto ID = server.addPost(std::move(text));
+        if (ID.isEmpty()) {
+            std::cout << "Sorry, cannot post your message :(\n";
+            return;
+        } else {
+            Message post;
+            if (server.getMessageById(ID, post)) {
+                messagesStack.clear();
+                messagesStack.emplace_back(std::move(post));
+            } else {
+                std::cout << "Something went wrong.\n";
+            }
+        }
+    } else {
+        std::cout << "Alright then...\n";
+    }
+    renderPostPage();
 }
 
 void Client::doNext() {
     if (messagesStack.empty()) {
         std::cout << "Something went wrong :(\n";
-        return;
-    }
-    if (currentPage != Page::POST_ && currentPage != Page::EMPTY_) {
-        std::cout << "You cannot look up the next message here!\n";
         return;
     }
 
@@ -252,11 +260,6 @@ void Client::doPrevious() {
         std::cout << "Something went wrong :(\n";
         return;
     }
-    if (currentPage != Page::POST_ && currentPage != Page::EMPTY_) {
-        std::cout << "You cannot look up the previous message here!\n";
-        currentPage = Page::EMPTY_;
-        return;
-    }
     auto requestedId = (messagesStack.end() - 1)->getId();
     if (requestedId.isFirst()) {
         std::cout << "No previous messages!\n";
@@ -272,11 +275,23 @@ void Client::doPrevious() {
 }
 
 void Client::doLike() {
-
+    if (!server.addLike((messagesStack.end() - 1)->getId()))
+        std::cout << "Something went wrong.";
+    else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
+                                    *(messagesStack.end() - 1)))
+        std::cout << "Something went wrong!\n";
+    else
+        renderPostPage();
 }
 
 void Client::doDislike() {
-
+    if (!server.addDislike((messagesStack.end() - 1)->getId()))
+        std::cout << "Something went wrong.";
+    else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
+                                   *(messagesStack.end() - 1)))
+        std::cout << "Something went wrong!\n";
+    else
+        renderPostPage();
 }
 
 void Client::printHelloMessage() const {
@@ -290,7 +305,7 @@ void Client::printHelpMessage() const {
         << "\tback — return back\n"
         << "\tmore — more info on current post\n"
         << "\tquit — end the session\n"
-        << "\tcomment — add comment on the current post\n"
+        << "\tcomment — add your response to the current post\n"
         << "\tpost — share your story with others\n"
         << "\tnext — move to the next message\n"
         << "\tprevious — move to the previous message\n"

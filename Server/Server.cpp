@@ -54,6 +54,32 @@ MessageID Server::addComment(std::string &&text, const MessageID &id) {
     return response->getId();
 }
 
+MessageID Server::addPost(std::string &&text) {
+    if (!data)
+        return {};
+    auto curr = data;
+    while (curr->getNextMessage())
+        curr = curr->getNextMessage();
+    curr->setNextMessage(new Message(0, text));
+    return curr->getNextMessage()->getId();
+}
+
+bool Server::addLike(const MessageID &id) {
+    auto message = messageById(id);
+    if (!message)
+        return false;
+    message->addLike();
+    return true;
+}
+
+bool Server::addDislike(const MessageID &id) {
+    auto message = messageById(id);
+    if (!message)
+        return false;
+    message->addDislike();
+    return true;
+}
+
 Message *Server::messageById(const MessageID &id) const {
     size_t level = 0;
     auto message = data;
@@ -70,5 +96,7 @@ Message *Server::messageById(const MessageID &id) const {
     }
     return nullptr;
 }
+
+
 
 

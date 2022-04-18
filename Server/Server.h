@@ -17,8 +17,12 @@ public:
     // Returns message as a separate node
     bool getMessageById(const MessageID &, Message &m) const;
 
-    // return response's id on success or an empty one on fail
+    // Both return response's id on success or an empty one on fail
     MessageID addComment(std::string &&, const MessageID &);
+    MessageID addPost(std::string &&);
+
+    bool addLike(const MessageID &);
+    bool addDislike(const MessageID &);
 
     const Message *getAllData() {return data;}
 private:

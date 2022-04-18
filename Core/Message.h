@@ -38,6 +38,11 @@ public:
     void setLikes(size_t) noexcept;
     bool removeLike() noexcept;
 
+    size_t getDislikes() const noexcept;
+    void addDislike() noexcept;
+    void setDislikes(size_t) noexcept;
+    bool removeDislike() noexcept;
+
     bool isTopLevelMessage() const noexcept;
 private:
     Message *next {nullptr};
@@ -45,6 +50,7 @@ private:
     MessageID id;
     std::string messText;
     size_t likes {0};
+    size_t dislikes {0};
     size_t responsesNum {0};
     Message *responsesBegin {nullptr};
     Message *responsesTail {nullptr};

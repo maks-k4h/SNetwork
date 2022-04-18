@@ -62,14 +62,33 @@ void Message::addLike() noexcept {
     ++likes;
 }
 
-void Message::setLikes(size_t l) noexcept {
-    likes = l;
+void Message::setLikes(size_t n) noexcept {
+    likes = n;
 }
 
 bool Message::removeLike() noexcept {
     if (likes == 0)
         return false;
     --likes;
+    return true;
+}
+
+size_t Message::getDislikes() const noexcept {
+    return dislikes;
+}
+
+void Message::addDislike() noexcept {
+    ++dislikes;
+}
+
+void Message::setDislikes(size_t n) noexcept {
+    dislikes = n;
+}
+
+bool Message::removeDislike() noexcept {
+    if (dislikes == 0)
+        return false;
+    --dislikes;
     return true;
 }
 

@@ -22,17 +22,7 @@ private:
 
     bool running {false};
 
-    enum class Page {
-        POST_,
-        COMMENT_,
-        NEW_POST_,
-        EMPTY_
-    };
-    Page currentPage {Page::POST_};
-
     void renderPostPage() const;
-    void renderCommentPage() const;
-    void renderNewPostPage() const;
 
     enum class Command {
         HELP_,

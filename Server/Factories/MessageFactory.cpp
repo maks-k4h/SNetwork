@@ -4,9 +4,9 @@
 
 #include "MessageFactory.h"
 
-size_t MessageFactory::messNum;
-std::array<size_t, 2> MessageFactory::likesRange;
-std::array<size_t, 2> MessageFactory::responsesRange;
+size_t MessageFactory::messNum {0};
+std::array<size_t, 2> MessageFactory::likesRange {0, 100};
+std::array<size_t, 2> MessageFactory::responsesRange {0, 5};
 
 static const std::vector<std::string> wordsDictionary {
     "ability", "absorb", "accept", "affair",
@@ -55,19 +55,21 @@ bool MessageFactory::setResponsesRange(size_t a, size_t b) noexcept {
 }
 
 Message *MessageFactory::createOneMessage() {
-    auto res = new Message(0, generateBodyText(1 + rand() % 20));
+    auto res = new Message(0, generateBodyText(1 + rand() % 10));
     res->setLikes(likesRange[0] + rand() % (likesRange[1] - likesRange[0] + 1));
     auto responsesNumber = responsesRange[0]
             + rand() % (responsesRange[1] - responsesRange[0] + 1);
-    if(responsesRange[0] == 0 && responsesRange[1] == 0)
-        return res; // no responses to create
-    // preparing ranges for recursion call
+    if(responsesRange[1] == 0)
+        return res;
+
+    // generating responses
     auto tempResRange = responsesRange;
-    responsesRange[0] /= 5; responsesRange[1] /= 2;
+    responsesRange[0] /= 3; responsesRange[1] /= 3;
     auto tempLikesRange = likesRange;
-    likesRange[0] /= 5; likesRange[1] /= 2;
+    likesRange[0] /= 5; likesRange[1] /= 5;
     for (size_t response {0}; response < responsesNumber; ++response)
-        res->addResponse(createOneMessage()); // generating responses
+        res->addResponse(createOneMessage());
+
     // restoring ranges
     responsesRange = tempResRange;
     likesRange = tempLikesRange;
@@ -97,7 +99,7 @@ std::string MessageFactory::generateBodyText(size_t sentences) {
 
 std::string MessageFactory::generateSentence() {
     std::string sentence = getRandomWord(true);
-    auto length = rand() % 8;
+    auto length = rand() % 10;
     while (length--)
         sentence += ' ' + getRandomWord(false);
     sentence += '.';
@@ -105,7 +107,7 @@ std::string MessageFactory::generateSentence() {
 }
 
 std::string MessageFactory::getRandomWord(bool capital) {
-    auto word = ::wordsDictionary[rand() % ::wordsDictionary.size()];
+    auto word = wordsDictionary[rand() % wordsDictionary.size()];
     if (capital)
         word[0] = toupper(word[0]);
     return std::move(word);

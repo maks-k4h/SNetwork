@@ -8,6 +8,7 @@ Server::~Server() {
 }
 
 bool Server::loadData() {
+    srand(time(nullptr));
     // generating random data for now
     MessageFactory::setMessagesNum(3);
     MessageFactory::setLikesRange(0, 1000);
@@ -28,17 +29,15 @@ void Server::deleteMessage(Message *message) {
     if (!message)
         return;
     auto responses = message->getResponses();
-    delete message;
     while (responses) {
         auto temp = responses->getNextMessage();
         deleteMessage(responses);
         responses = temp;
     }
+    delete message;
 }
 
 bool Server::getMessageById(const MessageID& id, Message &m) const {
-    if (id.isEmpty())
-        return false;
     auto message = messageById(id);
     if (message)
         m = *message;
@@ -50,7 +49,7 @@ MessageID Server::addComment(std::string &&text, const MessageID &id) {
     if (!message) // no message with such id
         return {};
     auto response = new Message(0, text);
-    message->addResponse(response);
+    message->addResponse(response); // id gets updated here
     return response->getId();
 }
 

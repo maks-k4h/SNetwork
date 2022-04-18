@@ -29,8 +29,6 @@ private:
     static size_t messNum;
     static std::array<size_t, 2> likesRange;
     static std::array<size_t, 2> responsesRange;
-
-    static const std::vector<std::string> wordsDictionary;
 };
 
 

@@ -12,9 +12,9 @@ public:
 
     // loads data from some source
     bool loadData();
+    // called by destructor, though can be called manually
     void cleanData();
 
-    // Returns message as a separate node
     bool getMessageById(const MessageID &, Message &m) const;
 
     // Both return response's id on success or an empty one on fail
@@ -26,6 +26,7 @@ public:
 
     const Message *getAllData() {return data;}
 private:
+    // nullptr on fail
     Message *messageById(const MessageID &) const;
     void deleteMessage(Message *);
     Message *data {nullptr};

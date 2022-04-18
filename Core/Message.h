@@ -15,9 +15,13 @@ public:
     Message(const Message &) = default;
     ~Message() = default;
 
-    // sets new id to passed message (if id of this was set)
+    // may change id
     void setNextMessage(Message *);
     Message *getNextMessage() const noexcept;
+
+    // may change id
+    void addResponse(Message *);
+    size_t getResponsesNum() const noexcept;
     Message *getResponses() const noexcept;
     Message *getLastResponse() const noexcept;
 
@@ -25,35 +29,31 @@ public:
     const std::string &getText() const;
     std::string getText();
 
-    size_t getResponsesNum() const noexcept;
-
-    void addResponse(Message *);
-
-    // sets new responses' ids too
+    // sets new ids of responses too
     void setId(const MessageID&) noexcept;
     const MessageID& getId() const noexcept;
 
     size_t getLikes() const noexcept;
-    void addLike() noexcept;
     void setLikes(size_t) noexcept;
+    void addLike() noexcept;
     bool removeLike() noexcept;
 
     size_t getDislikes() const noexcept;
-    void addDislike() noexcept;
     void setDislikes(size_t) noexcept;
+    void addDislike() noexcept;
     bool removeDislike() noexcept;
 
-    bool isTopLevelMessage() const noexcept;
+    bool isTopLevelMessage() const noexcept; // ~ has one-level id
 private:
     Message *next {nullptr};
+    Message *responsesBegin {nullptr};
+    Message *responsesTail {nullptr};
 
     MessageID id;
     std::string messText;
     size_t likes {0};
     size_t dislikes {0};
     size_t responsesNum {0};
-    Message *responsesBegin {nullptr};
-    Message *responsesTail {nullptr};
 };
 
 

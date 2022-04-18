@@ -12,17 +12,16 @@
 class Client {
 public:
     Client();
-    void run();
+    Client(const Client &) = default;
+    ~Client() = default;
 
+    void run();
 private:
     Server server;
-
-    std::vector<Message> messagesStack;
-    void prepareData();
-
     bool running {false};
+    std::vector<Message> messagesStack;
 
-    void renderPostPage() const;
+    void prepareData();
 
     enum class Command {
         HELP_,
@@ -39,10 +38,6 @@ private:
     };
     Command currentCommand {Command::INVALID_};
 
-    bool readCommand();
-    bool readBool(bool &res, const std::string & = "Y/n?") const;
-    void processCommand();
-
     void doBack();
     void doMore();
     void doComment();
@@ -52,10 +47,17 @@ private:
     void doLike();
     void doDislike();
 
+    bool readCommand();
+    bool readBool(bool &res, const std::string & = "Y/n?") const;
+    void processCommand();
+
+    void renderPostPage() const;
+
     void printHelloMessage() const;
     void printHelpMessage() const;
     void printGoodByeMessage() const;
     void printInvalidCommandMessage() const;
+    void printSWWMessage() const;
 
     void printCharLine(char, int n) const;
 

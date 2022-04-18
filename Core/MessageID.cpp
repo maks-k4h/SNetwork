@@ -2,10 +2,10 @@
 #include "MessageID.h"
 
 MessageID::MessageID(MessageID::vtype_t topLevelId)
-: data(1, topLevelId) {}
+: data{topLevelId} {}
 
-MessageID::MessageID(std::vector<vtype_t> vec)
-: data{std::move(vec)} {}
+MessageID::MessageID(const std::vector<vtype_t> &vec)
+: data{vec} {}
 
 bool MessageID::isEmpty() const noexcept {
     return data.empty();
@@ -31,13 +31,6 @@ bool MessageID::removeLastLevel() noexcept {
     if (data.empty())
         return false;
     data.erase(data.end() - 1);
-    return true;
-}
-
-bool MessageID::removeFirstLever() noexcept {
-    if (data.empty())
-        return false;
-    data.erase(data.begin());
     return true;
 }
 

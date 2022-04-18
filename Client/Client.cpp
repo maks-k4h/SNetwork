@@ -22,9 +22,8 @@ void Client::run() {
 
 void Client::prepareData() {
     Message message;
-    if (server.getMessageById(0, message)) {
+    if (server.getMessageById(0, message))
         messagesStack.emplace_back(std::move(message));
-    }
 }
 
 
@@ -158,6 +157,10 @@ void Client::doBack() {
 }
 
 void Client::doMore() {
+    if (messagesStack.empty()) {
+        std::cout << "No more information available.\n";
+        return;
+    }
     auto newID = (messagesStack.end() - 1)->getId();
     newID.addLevel(0);
     Message message;
@@ -170,6 +173,10 @@ void Client::doMore() {
 }
 
 void Client::doComment() {
+    if (messagesStack.empty()) {
+        std::cout << "Nothing to comment!\n";
+        return;
+    }
     std::cout << "Enter your response!\n";
     std::string comment;
     getline(std::cin, comment);
@@ -179,7 +186,7 @@ void Client::doComment() {
     }
     bool b;
     if (!readBool(b, "Publish this comment (Y/n)?")) {
-        std::cout << "Something went wrong...\n";
+        printSWWMessage();
     } else {
         if (b) {
             auto resID = server.addComment(std::move(comment),
@@ -216,7 +223,7 @@ void Client::doPost() {
     }
     bool b;
     if (!readBool(b, "Publish it (Y/n)?")) {
-        std::cout << "Something went wrong. :(\n";
+        printSWWMessage();
         return;
     }
     if (b) {
@@ -230,7 +237,7 @@ void Client::doPost() {
                 messagesStack.clear();
                 messagesStack.emplace_back(std::move(post));
             } else {
-                std::cout << "Something went wrong.\n";
+                printSWWMessage();
             }
         }
     } else {
@@ -241,7 +248,7 @@ void Client::doPost() {
 
 void Client::doNext() {
     if (messagesStack.empty()) {
-        std::cout << "Something went wrong :(\n";
+        std::cout << "No posts yet.\n";
         return;
     }
 
@@ -257,7 +264,7 @@ void Client::doNext() {
 
 void Client::doPrevious() {
     if (messagesStack.empty()) {
-        std::cout << "Something went wrong :(\n";
+        std::cout << "No posts yet.\n";
         return;
     }
     auto requestedId = (messagesStack.end() - 1)->getId();
@@ -268,28 +275,35 @@ void Client::doPrevious() {
     --requestedId;
     // asking for the previous post
     if (!server.getMessageById(requestedId, *(messagesStack.end() - 1))) {
-        std::cout << "Something went wrong..\n";
+        printSWWMessage();
     } else {
         renderPostPage();
     }
 }
 
 void Client::doLike() {
-    if (!server.addLike((messagesStack.end() - 1)->getId()))
-        std::cout << "Something went wrong.";
-    else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
+    if (messagesStack.empty()) {
+        std::cout << "Nothing to like...\n";
+        return;
+    }
+    if (!server.addLike((messagesStack.end() - 1)->getId()) ||
+        !server.getMessageById((messagesStack.end() - 1)->getId(),
                                     *(messagesStack.end() - 1)))
-        std::cout << "Something went wrong!\n";
+        printSWWMessage();
     else
         renderPostPage();
 }
 
 void Client::doDislike() {
+    if (messagesStack.empty()) {
+        std::cout << "Nothing to dislike...\n";
+        return;
+    }
     if (!server.addDislike((messagesStack.end() - 1)->getId()))
         std::cout << "Something went wrong.";
     else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
                                    *(messagesStack.end() - 1)))
-        std::cout << "Something went wrong!\n";
+        printSWWMessage();
     else
         renderPostPage();
 }
@@ -300,7 +314,7 @@ void Client::printHelloMessage() const {
 
 void Client::printHelpMessage() const {
     std::cout
-        << "Command available:\n"
+        << "Commands available:\n"
         << "\thelp — get more info whenever you need it\n"
         << "\tback — return back\n"
         << "\tmore — more info on current post\n"
@@ -319,6 +333,10 @@ void Client::printInvalidCommandMessage() const {
 
 void Client::printGoodByeMessage() const {
     std::cout << "Hope to see you soon...\n";
+}
+
+void Client::printSWWMessage() const {
+    std::cout << "Something went wrong :(\n";
 }
 
 void Client::printCharLine(char ch, int n) const {

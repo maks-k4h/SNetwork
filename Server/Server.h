@@ -2,7 +2,7 @@
 #ifndef SERVER_SERVER_H_
 #define SERVER_SERVER_H_
 
-#include "../Core/Message.h"
+#include "../Core/MessageNode.h"
 
 class Server {
 public:
@@ -24,12 +24,11 @@ public:
     bool addLike(const MessageID &);
     bool addDislike(const MessageID &);
 
-    const Message *getAllData() {return data;}
 private:
     // nullptr on fail
-    Message *messageById(const MessageID &) const;
-    void deleteMessage(Message *);
-    Message *data {nullptr};
+    MessageNode *messageById(const MessageID &) const;
+    void deleteMessage(MessageNode *);
+    MessageNode *data {nullptr};
 };
 
 

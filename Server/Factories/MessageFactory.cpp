@@ -54,8 +54,8 @@ bool MessageFactory::setResponsesRange(size_t a, size_t b) noexcept {
     return true;
 }
 
-Message *MessageFactory::createOneMessage() {
-    auto res = new Message(0, generateBodyText(1 + rand() % 10));
+MessageNode *MessageFactory::createOneMessage() {
+    auto res = new MessageNode(generateBodyText(1 + rand() % 10));
     res->setLikes(likesRange[0] + rand() % (likesRange[1] - likesRange[0] + 1));
     auto responsesNumber = responsesRange[0]
             + rand() % (responsesRange[1] - responsesRange[0] + 1);
@@ -76,7 +76,7 @@ Message *MessageFactory::createOneMessage() {
     return res;
 }
 
-Message *MessageFactory::createMessageSet() {
+MessageNode *MessageFactory::createMessageSet() {
     if (messNum < 1)
         return nullptr;
     auto res = createOneMessage();

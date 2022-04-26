@@ -1,33 +1,14 @@
 
 #include "Message.h"
 
+Message::Message(const std::string &str)
+: messText(str), id {0} {}
+
 Message::Message(const MessageID &messageId)
 : id {messageId} {}
 
 Message::Message(const MessageID &messageId, const std::string &text)
-        : id {messageId}, messText {text} {}
-
-void Message::setNextMessage(Message *message) {
-    if (!message)
-        return;
-    next = message;
-    if (id.isEmpty())
-        return;
-    next->id = id;
-    ++next->id;
-}
-
-Message *Message::getNextMessage() const noexcept {
-    return next;
-}
-
-Message *Message::getResponses() const noexcept {
-    return responsesBegin;
-}
-
-Message *Message::getLastResponse() const noexcept {
-    return responsesTail;
-}
+: id {messageId}, messText {text} {}
 
 size_t Message::getResponsesNum() const noexcept {
     return responsesNum;
@@ -103,33 +84,8 @@ const MessageID &Message::getId() const noexcept {
     return id;
 }
 
-void Message::setId(const MessageID &newId) noexcept {
+void Message::setId(const MessageID &newId) {
     id = newId;
-    // setting new ids to all responses (and their responses and so on)
-    auto temp {responsesBegin};
-    size_t count {0};
-    while (temp) {
-        auto responseId {id};
-        responseId.addLevel(count);
-        temp->setId(responseId);
-        ++count;
-        temp = temp->next;
-    }
-}
-
-void Message::addResponse(Message *newResponse) {
-    // changing response's id
-    auto newId {id};
-    newId.addLevel(getResponsesNum());
-    // adding updated response
-    newResponse->setId(newId);
-    if (responsesBegin) {
-        responsesTail->next = newResponse;
-        responsesTail = responsesTail->next;
-    } else {
-        responsesBegin = responsesTail = newResponse;
-    }
-    ++responsesNum;
 }
 
 

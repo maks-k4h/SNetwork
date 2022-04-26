@@ -2,7 +2,7 @@
 #ifndef SERVER_FACTORIES_MESSAGEFACTORY_H_
 #define SERVER_FACTORIES_MESSAGEFACTORY_H_
 
-#include "../../Core/Message.h"
+#include "../../Core/MessageNode.h"
 
 #include <tuple>
 #include <cstdlib>
@@ -17,8 +17,8 @@ public:
     static bool setLikesRange(size_t a, size_t b) noexcept;
     static bool setResponsesRange(size_t a, size_t b) noexcept;
 
-    static Message *createOneMessage();
-    static Message *createMessageSet();
+    static MessageNode *createOneMessage();
+    static MessageNode *createMessageSet();
 
     static std::string generateBodyText(size_t sentences = 5);
     static std::string generateSentence();

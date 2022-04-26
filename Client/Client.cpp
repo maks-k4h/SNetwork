@@ -5,12 +5,11 @@
 #include "Client.h"
 #include <iostream>
 
-Client::Client() {
-    server.loadData();
-}
-
 void Client::run() {
+    // preparing data
+    server.loadData();
     prepareData();
+    // running the client
     running = true;
     printHelloMessage();
     renderPostPage();

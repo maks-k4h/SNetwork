@@ -11,7 +11,7 @@
 
 class Client {
 public:
-    Client();
+    Client() = default;
     Client(const Client &) = default;
     ~Client() = default;
 
@@ -52,7 +52,6 @@ private:
     void processCommand();
 
     void renderPostPage() const;
-
     void printHelloMessage() const;
     void printHelpMessage() const;
     void printGoodByeMessage() const;

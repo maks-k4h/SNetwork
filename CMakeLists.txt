@@ -13,4 +13,4 @@ add_executable(SNetwork
         Server/Server.h
         Server/Factories/MessageFactory.cpp
         Server/Factories/MessageFactory.h
-        Client/Client.cpp Client/Client.h)
+        Client/Client.cpp Client/Client.h Core/MessageNode.cpp Core/MessageNode.h)

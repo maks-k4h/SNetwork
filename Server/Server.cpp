@@ -25,7 +25,7 @@ void Server::cleanData() {
     }
 }
 
-void Server::deleteMessage(Message *message) {
+void Server::deleteMessage(MessageNode *message) {
     if (!message)
         return;
     auto responses = message->getResponses();
@@ -40,7 +40,7 @@ void Server::deleteMessage(Message *message) {
 bool Server::getMessageById(const MessageID& id, Message &m) const {
     auto message = messageById(id);
     if (message)
-        m = *message;
+        m = static_cast<Message>(*message);
     return nullptr != message;
 }
 
@@ -48,7 +48,7 @@ MessageID Server::addComment(std::string &&text, const MessageID &id) {
     auto message = messageById(id);
     if (!message) // no message with such id
         return {};
-    auto response = new Message(0, text);
+    auto response = new MessageNode(text);
     message->addResponse(response); // id gets updated here
     return response->getId();
 }
@@ -59,7 +59,7 @@ MessageID Server::addPost(std::string &&text) {
     auto curr = data;
     while (curr->getNextMessage())
         curr = curr->getNextMessage();
-    curr->setNextMessage(new Message(0, text));
+    curr->setNextMessage(new MessageNode(text));
     return curr->getNextMessage()->getId();
 }
 
@@ -79,7 +79,7 @@ bool Server::addDislike(const MessageID &id) {
     return true;
 }
 
-Message *Server::messageById(const MessageID &id) const {
+MessageNode *Server::messageById(const MessageID &id) const {
     size_t level = 0;
     auto message = data;
     while (message) {

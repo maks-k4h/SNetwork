@@ -24,6 +24,8 @@ public:
     bool addLike(const MessageID &);
     bool addDislike(const MessageID &);
 
+    bool addReport(const MessageID &);
+
 private:
     // nullptr on fail
     MessageNode *messageById(const MessageID &) const;

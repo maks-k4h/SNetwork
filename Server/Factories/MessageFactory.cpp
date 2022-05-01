@@ -7,6 +7,7 @@
 size_t MessageFactory::messNum {0};
 std::array<size_t, 2> MessageFactory::likesRange {0, 100};
 std::array<size_t, 2> MessageFactory::responsesRange {0, 5};
+std::array<size_t, 2> MessageFactory::sentencesRange {1, 5};
 
 static const std::vector<std::string> wordsDictionary {
     "ability", "absorb", "accept", "affair",
@@ -54,8 +55,15 @@ bool MessageFactory::setResponsesRange(size_t a, size_t b) noexcept {
     return true;
 }
 
+bool MessageFactory::setSentencesRange(size_t a, size_t b) noexcept {
+    if (a > b)
+        return false;
+    sentencesRange = {a, b};
+    return true;
+}
+
 MessageNode *MessageFactory::createOneMessage() {
-    auto res = new MessageNode(generateBodyText(1 + rand() % 10));
+    auto res = new MessageNode(generateBodyText());
     res->setLikes(likesRange[0] + rand() % (likesRange[1] - likesRange[0] + 1));
     auto responsesNumber = responsesRange[0]
             + rand() % (responsesRange[1] - responsesRange[0] + 1);
@@ -89,7 +97,9 @@ MessageNode *MessageFactory::createMessageSet() {
     return res;
 }
 
-std::string MessageFactory::generateBodyText(size_t sentences) {
+std::string MessageFactory::generateBodyText() {
+    auto sentences = sentencesRange[0] +
+            rand() % (sentencesRange[1] - sentencesRange[0] + 1);
     std::string res;
     while (sentences--) {
         res += generateSentence() + ' ';
@@ -112,3 +122,5 @@ std::string MessageFactory::getRandomWord(bool capital) {
         word[0] = toupper(word[0]);
     return std::move(word);
 }
+
+

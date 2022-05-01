@@ -34,6 +34,7 @@ private:
         PREVIOUS_,
         LIKE_,
         DISLIKE_,
+        REPORT_,
         INVALID_
     };
     Command currentCommand {Command::INVALID_};
@@ -46,6 +47,7 @@ private:
     void doPrevious();
     void doLike();
     void doDislike();
+    void doReport();
 
     bool readCommand();
     bool readBool(bool &res, const std::string & = "Y/n?") const;

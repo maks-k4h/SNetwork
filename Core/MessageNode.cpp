@@ -5,13 +5,14 @@
 #include "MessageNode.h"
 
 MessageNode::MessageNode(const MessageID &id)
-: Message(id) { }
+: Message(id), timestamp{time(nullptr)} { }
 
 MessageNode::MessageNode(const std::string &str)
-: Message(str) { }
+: Message(str), timestamp{time(nullptr)} { }
 
 MessageNode::MessageNode(const MessageID &id, const std::string &str)
-: Message(id, str) { }
+: Message(id, str), timestamp{time(nullptr)} { }
+
 
 void MessageNode::setNextMessage(MessageNode *message) {
     if (!message)
@@ -63,4 +64,17 @@ void MessageNode::setId(const MessageID &newId) {
         temp = temp->next;
     }
 }
+
+time_t MessageNode::getTimestamp() const noexcept {
+    return timestamp;
+}
+
+void MessageNode::addReport() noexcept {
+    ++reportsNumber;
+}
+
+size_t MessageNode::getReportsNum() const noexcept {
+    return reportsNumber;
+}
+
 

@@ -69,6 +69,8 @@ bool Client::readCommand() {
         currentCommand = Command::LIKE_;
     } else if (command == "dislike") {
         currentCommand = Command::DISLIKE_;
+    } else if (command == "report") {
+        currentCommand = Command::REPORT_;
     } else {
         currentCommand = Command::INVALID_;
     }
@@ -138,6 +140,10 @@ void Client::processCommand() {
         }
         case Command::DISLIKE_: {
             doDislike();
+            break;
+        }
+        case Command::REPORT_: {
+            doReport();
             break;
         }
         default: {
@@ -299,12 +305,23 @@ void Client::doDislike() {
         return;
     }
     if (!server.addDislike((messagesStack.end() - 1)->getId()))
-        std::cout << "Something went wrong.";
+        std::cout << "Something went wrong.\n";
     else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
                                    *(messagesStack.end() - 1)))
         printSWWMessage();
     else
         renderPostPage();
+}
+
+void Client::doReport() {
+    if (messagesStack.empty()) {
+        std::cout << "Nothing to report...\n";
+        return;
+    }
+    if (!server.addReport((messagesStack.end() - 1)->getId()))
+        std::cout << "Something went wrong.\n";
+    else
+        std::cout << "Message was successfully reported!\n";
 }
 
 void Client::printHelloMessage() const {

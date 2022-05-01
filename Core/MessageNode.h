@@ -4,6 +4,8 @@
 
 #include "Message.h"
 
+#include <ctime>
+
 class MessageNode : public Message {
 public:
     MessageNode() = default;
@@ -24,11 +26,18 @@ public:
     MessageNode *getResponses() const noexcept;
     MessageNode *getLastResponse() const noexcept;
 
+    time_t getTimestamp() const noexcept;
+
+    void addReport() noexcept;
+    size_t getReportsNum() const noexcept;
 
 private:
     MessageNode *next {nullptr};
     MessageNode *responsesBegin {nullptr};
     MessageNode *responsesTail {nullptr};
+
+    time_t timestamp {0};
+    size_t reportsNumber {0};
 };
 
 

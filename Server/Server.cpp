@@ -13,6 +13,7 @@ bool Server::loadData() {
     MessageFactory::setMessagesNum(3);
     MessageFactory::setLikesRange(0, 1000);
     MessageFactory::setResponsesRange(0, 6);
+    MessageFactory::setSentencesRange(1, 3);
     data = MessageFactory::createMessageSet();
     return data != nullptr;
 }
@@ -76,6 +77,14 @@ bool Server::addDislike(const MessageID &id) {
     if (!message)
         return false;
     message->addDislike();
+    return true;
+}
+
+bool Server::addReport(const MessageID &id) {
+    auto message = messageById(id);
+    if (!message)
+        return false;
+    message->addReport();
     return true;
 }
 

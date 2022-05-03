@@ -4,6 +4,13 @@
 
 #include "Message.h"
 
+#include <ctime>
+
+constexpr double FL_MU {5};
+constexpr double FL_H {0.95};
+constexpr double TSS_MAX {1}; // text spam score max
+constexpr double TSS_MIN {0}; // text spam score min
+
 class MessageNode : public Message {
 public:
     MessageNode() = default;
@@ -18,17 +25,35 @@ public:
     // may change id
     void setNextMessage(MessageNode *);
     MessageNode *getNextMessage() const noexcept;
+    void setPreviousMessage(MessageNode *);
+    MessageNode *getPreviousMessage() const noexcept;
 
 
     void addResponse(MessageNode *);
     MessageNode *getResponses() const noexcept;
     MessageNode *getLastResponse() const noexcept;
 
+    time_t getTimestamp() const noexcept;
+
+    void addReport() noexcept;
+    size_t getReportsNum() const noexcept;
+
+    bool setTextSpamScore(double) noexcept;
+    double getTextSpamScore() const noexcept;
+
+    double calculateScore() const noexcept;
+    bool isSpamMessage() const noexcept;
 
 private:
     MessageNode *next {nullptr};
+    MessageNode *previous {nullptr};
     MessageNode *responsesBegin {nullptr};
     MessageNode *responsesTail {nullptr};
+
+    time_t timestamp {0};
+    size_t reportsNumber {0};
+    double tss {0}; // text spam score
+
 };
 
 

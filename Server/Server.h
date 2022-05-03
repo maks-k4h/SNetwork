@@ -16,6 +16,9 @@ public:
     void cleanData();
 
     bool getMessageById(const MessageID &, Message &m) const;
+    bool getNextMessage(const MessageID &, Message &m) const;
+    bool getPreviousMessage(const MessageID &, Message &m) const;
+    bool getFirstResponse(const MessageID &, Message &m) const;
 
     // Both return response's id on success or an empty one on fail
     MessageID addComment(std::string &&, const MessageID &);
@@ -23,6 +26,8 @@ public:
 
     bool addLike(const MessageID &);
     bool addDislike(const MessageID &);
+
+    bool addReport(const MessageID &);
 
 private:
     // nullptr on fail

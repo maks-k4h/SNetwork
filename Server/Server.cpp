@@ -13,6 +13,7 @@ bool Server::loadData() {
     MessageFactory::setMessagesNum(3);
     MessageFactory::setLikesRange(0, 1000);
     MessageFactory::setResponsesRange(0, 6);
+    MessageFactory::setSentencesRange(1, 3);
     data = MessageFactory::createMessageSet();
     return data != nullptr;
 }
@@ -39,9 +40,35 @@ void Server::deleteMessage(MessageNode *message) {
 
 bool Server::getMessageById(const MessageID& id, Message &m) const {
     auto message = messageById(id);
-    if (message)
+    if (message) {
         m = static_cast<Message>(*message);
-    return nullptr != message;
+        return true;
+    }
+    return false;
+}
+
+bool Server::getNextMessage(const MessageID &id, Message &m) const {
+    auto message = messageById(id);
+    if (!message || message->getNextMessage() == nullptr)
+        return false;
+    m = static_cast<Message>(*message->getNextMessage());
+    return true;
+}
+
+bool Server::getPreviousMessage(const MessageID &id, Message &m) const {
+    auto message = messageById(id);
+    if (!message || message->getPreviousMessage() == nullptr)
+        return false;
+    m = static_cast<Message>(*message->getPreviousMessage());
+    return true;
+}
+
+bool Server::getFirstResponse(const MessageID &id, Message &m) const {
+    auto message = messageById(id);
+    if (!message || message->getResponses() == nullptr)
+        return false;
+    m = static_cast<Message>(*message->getResponses());
+    return true;
 }
 
 MessageID Server::addComment(std::string &&text, const MessageID &id) {
@@ -76,6 +103,14 @@ bool Server::addDislike(const MessageID &id) {
     if (!message)
         return false;
     message->addDislike();
+    return true;
+}
+
+bool Server::addReport(const MessageID &id) {
+    auto message = messageById(id);
+    if (!message)
+        return false;
+    message->addReport();
     return true;
 }
 

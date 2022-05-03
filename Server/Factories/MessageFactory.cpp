@@ -69,6 +69,7 @@ MessageNode *MessageFactory::createOneMessage() {
             + rand() % (responsesRange[1] - responsesRange[0] + 1);
     if(responsesRange[1] == 0)
         return res;
+    res->setTextSpamScore(.1);
 
     // generating responses
     auto tempResRange = responsesRange;
@@ -91,6 +92,7 @@ MessageNode *MessageFactory::createMessageSet() {
     auto curr = res;
     for (size_t i = 1; i < messNum; ++i) {
         curr->setNextMessage(createOneMessage());
+        curr->getNextMessage()->setPreviousMessage(curr);
         curr = curr->getNextMessage();
         curr->setId(i);
     }

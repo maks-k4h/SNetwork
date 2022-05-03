@@ -166,10 +166,9 @@ void Client::doMore() {
         std::cout << "No more information available.\n";
         return;
     }
-    auto newID = (messagesStack.end() - 1)->getId();
-    newID.addLevel(0);
+
     Message message;
-    if (server.getMessageById(newID, message)) {
+    if (server.getFirstResponse((messagesStack.end() - 1)->getId(), message)) {
         messagesStack.emplace_back(std::move(message));
         renderPostPage();
     } else {
@@ -257,10 +256,8 @@ void Client::doNext() {
         return;
     }
 
-    auto requestedId = (messagesStack.end() - 1)->getId();
-    ++requestedId;
-    // asking for the next post
-    if (!server.getMessageById(requestedId, *(messagesStack.end() - 1))) {
+    if (!server.getNextMessage((messagesStack.end() - 1)->getId(),
+                               *(messagesStack.end() - 1))) {
         std::cout << "That is all for now!\n";
     } else {
         renderPostPage();
@@ -272,15 +269,10 @@ void Client::doPrevious() {
         std::cout << "No posts yet.\n";
         return;
     }
-    auto requestedId = (messagesStack.end() - 1)->getId();
-    if (requestedId.isFirst()) {
+
+    if (!server.getPreviousMessage((messagesStack.end() - 1)->getId(),
+                                   *(messagesStack.end() - 1))) {
         std::cout << "No previous messages!\n";
-        return;
-    }
-    --requestedId;
-    // asking for the previous post
-    if (!server.getMessageById(requestedId, *(messagesStack.end() - 1))) {
-        printSWWMessage();
     } else {
         renderPostPage();
     }
@@ -340,6 +332,7 @@ void Client::printHelpMessage() const {
         << "\tnext — move to the next message\n"
         << "\tprevious — move to the previous message\n"
         << "\tlike — like this message\n"
+        << "\treport — report spam\n"
         << "\tdislike — dislike this message\n";
 }
 

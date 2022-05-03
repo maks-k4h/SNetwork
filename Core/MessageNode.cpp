@@ -4,6 +4,8 @@
 
 #include "MessageNode.h"
 
+#include <cmath>
+
 MessageNode::MessageNode(const MessageID &id)
 : Message(id), timestamp{time(nullptr)} { }
 
@@ -26,6 +28,14 @@ void MessageNode::setNextMessage(MessageNode *message) {
 
 MessageNode *MessageNode::getNextMessage() const noexcept {
     return next;
+}
+
+void MessageNode::setPreviousMessage(MessageNode *p) {
+    previous = p;
+}
+
+MessageNode *MessageNode::getPreviousMessage() const noexcept {
+    return previous;
 }
 
 MessageNode *MessageNode::getResponses() const noexcept {
@@ -75,6 +85,25 @@ void MessageNode::addReport() noexcept {
 
 size_t MessageNode::getReportsNum() const noexcept {
     return reportsNumber;
+}
+
+bool MessageNode::setTextSpamScore(double s) noexcept {
+    if (s < TSS_MIN || s > TSS_MAX)
+        return false;
+    tss = s;
+}
+
+double MessageNode::getTextSpamScore() const noexcept {
+    return tss;
+}
+
+double MessageNode::calculateScore() const noexcept {
+    return tanh(tss / sqrt(FL_MU + static_cast<double>(getLikes())))
+        + tss;
+}
+
+bool MessageNode::isSpamMessage() const noexcept {
+    return calculateScore() >= FL_H;
 }
 
 

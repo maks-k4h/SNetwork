@@ -32,6 +32,8 @@ public:
 
     std::string toString() const;
 
+    int fromString(const std::string&);
+
 private:
     std::vector<vtype_t> data;
 };

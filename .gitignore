@@ -1,1 +1,4 @@
 /cmake-build-debug
+/Deamons/TSSData.csv
+/Deamons/TSSDeamonLog.txt
+/Deamons/TSSRates.csv

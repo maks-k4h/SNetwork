@@ -15,9 +15,9 @@ Server::~Server() {
 bool Server::loadData() {
     srand(time(nullptr));
     // generating random data for now
-    MessageFactory::setMessagesNum(3);
-    MessageFactory::setLikesRange(0, 1000);
-    MessageFactory::setResponsesRange(0, 6);
+    MessageFactory::setMessagesNum(5);
+    MessageFactory::setLikesRange(100, 1000);
+    MessageFactory::setResponsesRange(0, 10);
     MessageFactory::setSentencesRange(1, 3);
     data = MessageFactory::createMessageSet();
     if (!data)
@@ -185,11 +185,6 @@ bool Server::setRate(const MessageID &id, double rate) {
         return false;
 
     // if no message it's alright, message could be deleted previously
-    std::cerr << "New message with id "
-                << message->getId().toString()
-                << " was updated! Its tss is "
-                << message->getTextSpamScore() << " and its rate is "
-                << message->calculateRate() << '\n';
     return true;
 }
 

@@ -69,8 +69,6 @@ MessageNode *MessageFactory::createOneMessage() {
             + rand() % (responsesRange[1] - responsesRange[0] + 1);
     if(responsesRange[1] == 0)
         return res;
-    res->setTextSpamScore(.1);
-
     // generating responses
     auto tempResRange = responsesRange;
     responsesRange[0] /= 3; responsesRange[1] /= 3;

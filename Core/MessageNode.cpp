@@ -91,19 +91,20 @@ bool MessageNode::setTextSpamScore(double s) noexcept {
     if (s < TSS_MIN || s > TSS_MAX)
         return false;
     tss = s;
+    return true;
 }
 
 double MessageNode::getTextSpamScore() const noexcept {
     return tss;
 }
 
-double MessageNode::calculateScore() const noexcept {
-    return tanh(tss / sqrt(FL_MU + static_cast<double>(getLikes())))
-        + tss;
+double MessageNode::calculateRate() const noexcept {
+    return tanh(FL_MU * static_cast<double>(reportsNumber)
+        / (1 + static_cast<double>(getLikes()))) + tss;
 }
 
 bool MessageNode::isSpamMessage() const noexcept {
-    return calculateScore() >= FL_H;
+    return calculateRate() >= FL_H;
 }
 
 

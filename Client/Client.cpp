@@ -5,9 +5,11 @@
 #include "Client.h"
 #include <iostream>
 
+Client::Client(Server &s)
+: server{s} {}
+
 void Client::run() {
     // preparing data
-    server.loadData();
     prepareData();
     // running the client
     running = true;
@@ -352,6 +354,8 @@ void Client::printCharLine(char ch, int n) const {
     while (0 < n--)
         std::cout.put(ch);
 }
+
+
 
 
 

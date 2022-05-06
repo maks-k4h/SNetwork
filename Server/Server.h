@@ -4,9 +4,11 @@
 
 #include "../Core/MessageNode.h"
 
+#include <list>
+
 class Server {
 public:
-    Server() = default;
+    Server();
     Server(const Server &) = default;
     ~Server();
 
@@ -29,11 +31,18 @@ public:
 
     bool addReport(const MessageID &);
 
+    const std::list<MessageID> &getUnrated() const;
+    bool setRate(const MessageID &, double);
+
 private:
     // nullptr on fail
     MessageNode *messageById(const MessageID &) const;
     void deleteMessage(MessageNode *);
+
+    void processSpam(MessageNode *);
     MessageNode *data {nullptr};
+
+    std::list<MessageID> unrated;
 };
 
 

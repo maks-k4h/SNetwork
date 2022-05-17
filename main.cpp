@@ -1,6 +1,6 @@
 
 #include "Client/Client.h"
-#include "Deamons/TSSEvaluator.h"
+#include "Daemons/TSSEvaluator.h"
 
 #include <thread>
 #include <chrono>
@@ -9,11 +9,11 @@ int main() {
     Server server;
     Client client(server);
 
-    TSSEvaluator deamon(server);
+    TSSEvaluator daemon(server);
 
-    deamon.run();
+    daemon.run();
 
     client.run();
 
-    deamon.stop();
+    daemon.stop();
 }

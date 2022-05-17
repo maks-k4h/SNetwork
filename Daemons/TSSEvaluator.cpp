@@ -12,38 +12,38 @@ TSSEvaluator::TSSEvaluator(Server &s)
 : server{s} {
     logfile.open(LOGP, LOGMODE);
     if (!logfile.is_open()) {
-        std::cerr << "Cannot open TSS Deamon logfile!\n";
+        std::cerr << "Cannot open TSS Daemon logfile!\n";
     }
-    mlog("Deamon created.");
+    mlog("Daemon created.");
 }
 
 TSSEvaluator::~TSSEvaluator() {
     stop();
-    mlog("Deamon destroyed.");
+    mlog("Daemon destroyed.");
     logfile.close();
 }
 
 bool TSSEvaluator::run() {
     if (running || thr) {
-        elog("Try to run already running deamon.");
+        elog("Try to run already running daemon.");
         return false;
     }
-    mlog("Running the deamon.");
+    mlog("Running the daemon.");
     running = true;
     counter = updateRateMS;
     thr = new std::thread(&TSSEvaluator::TSSf, this);
-    mlog("The deamon is running.");
+    mlog("The daemon is running.");
     return true;
 }
 
 void TSSEvaluator::stop() {
     if (running && thr) {
-        mlog("Stopping the deamon.");
+        mlog("Stopping the daemon.");
         running = false;
         thr->join();
         delete thr;
         thr = nullptr;
-        mlog("The deamon is stopped.");
+        mlog("The daemon is stopped.");
     }
 }
 

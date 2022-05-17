@@ -1,8 +1,8 @@
 import csv
 import random
 
-dataCSVPath = '../Deamons/TSSData.csv'
-ratesCSVPath = '../Deamons/TSSRates.csv'
+dataCSVPath = '../Daemons/TSSData.csv'
+ratesCSVPath = '../Daemons/TSSRates.csv'
 
 with open(dataCSVPath, 'r') as infile:
     csv_reader = csv.reader(infile)

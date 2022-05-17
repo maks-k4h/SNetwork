@@ -1,11 +1,11 @@
 
 
 
-#ifndef DEAMONS_TSSEVALUATOR_H_
-#define DEAMONS_TSSEVALUATOR_H_
+#ifndef DAEMONS_TSSEVALUATOR_H_
+#define DAEMONS_TSSEVALUATOR_H_
 
 /*
- * TSSEvaluator — Text Spam Score Evaluation Deamon
+ * TSSEvaluator — Text Spam Score Evaluation Daemon
  *
  * */
 
@@ -19,17 +19,17 @@
 #include <string>
 
 // Python Script Path
-const std::string PSP ("../Deamons/TSSScript.py");
+const std::string PSP ("../Daemons/TSSScript.py");
 // Python Call Command
 const std::string PCC = {"python3 " + PSP};
 
 // csv files
-constexpr auto csvOutFile {"../Deamons/TSSData.csv"};
-constexpr auto csvInFile {"../Deamons/TSSRates.csv"};
+constexpr auto csvOutFile {"../Daemons/TSSData.csv"};
+constexpr auto csvInFile {"../Daemons/TSSRates.csv"};
 constexpr auto csvSeparator = ',';
 
 // Deamon log filepath
-constexpr auto LOGP {"../Deamons/TSSDeamonLog.txt"};
+constexpr auto LOGP {"../Daemons/TSSDaemonLog.txt"};
 constexpr auto LOGMODE = std::ios_base::ate;
 
 constexpr auto clockRateMS {500};
@@ -84,4 +84,4 @@ private:
 };
 
 
-#endif // DEAMONS_TSSEVALUATOR_H_
+#endif // DAEMONS_TSSEVALUATOR_H_

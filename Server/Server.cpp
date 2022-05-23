@@ -61,6 +61,14 @@ void Server::deleteMessage(MessageNode *message) {
     delete message;
 }
 
+bool Server::getFirstPost(Message &m) const noexcept{
+    if (!data)
+        return false;
+    m = static_cast<Message>(*data);
+    return true;
+}
+
+
 bool Server::getMessageById(const MessageID& id, Message &m) const {
     auto message = messageById(id);
     if (message) {
@@ -115,6 +123,7 @@ MessageID Server::addPost(std::string &&text) {
     while (curr->getNextMessage())
         curr = curr->getNextMessage();
     curr->setNextMessage(new MessageNode(text));
+    curr->getNextMessage()->setPreviousMessage(curr);
     curr = curr->getNextMessage();
 
     unrated.push_back(curr->getId());
@@ -147,28 +156,47 @@ bool Server::addReport(const MessageID &id) {
     processSpam(message);
     return true;
 }
-
+#include <iostream>
 MessageNode *Server::messageById(const MessageID &id) const {
     size_t level = 0;
     auto message = data;
     while (message) {
-        while (message && message->getId()[level] < id[level])
+        while (message && message->getId()[level] != id[level])
             message = message->getNextMessage();
         if (!message)
             break;
         ++level;
-        if (level == id.getLevelsNum()) {
+        if (level == id.getLevelsNum())
             return message;
-        }
         message = message->getResponses();
     }
     return nullptr;
 }
-#include <iostream>
+
 void Server::processSpam(MessageNode *m) {
-    std::cout << "MR : " << m->calculateRate() << std::endl;
-    std::cout << (m->isSpamMessage() ?
-        "This message IS spam" : "This message is NOT spam") << ".\n";
+    if (m->isSpamMessage()) {
+        // deleting the message
+        if (!m->isTopLevelMessage()) { // response
+            auto parentID = m->getId();
+            parentID.removeLastLevel();
+            auto parent = messageById(parentID);
+            if (!parent) {
+                // LOG THE ERROR
+                return;
+            }
+            parent->removeResponse(m);
+        } else { // post
+            if (m->getPreviousMessage()) {
+                m->getPreviousMessage()->
+                    setNextMessage(m->getNextMessage());
+            }
+            if (m->getNextMessage()) {
+                m->getNextMessage()->
+                    setPreviousMessage(m->getPreviousMessage());
+            }
+        }
+        deleteMessage(m);
+    }
 }
 
 const std::list<MessageID> &Server::getUnrated() const {

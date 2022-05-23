@@ -17,6 +17,7 @@ public:
     // called by destructor, though can be called manually
     void cleanData();
 
+    bool getFirstPost(Message &) const noexcept;
     bool getMessageById(const MessageID &, Message &m) const;
     bool getNextMessage(const MessageID &, Message &m) const;
     bool getPreviousMessage(const MessageID &, Message &m) const;

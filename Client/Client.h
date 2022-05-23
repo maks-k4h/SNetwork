@@ -21,7 +21,7 @@ private:
     bool running {false};
     std::vector<Message> messagesStack;
 
-    void prepareData();
+    void updateMessageStack();
 
     enum class Command {
         HELP_,

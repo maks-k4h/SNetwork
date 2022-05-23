@@ -79,8 +79,7 @@ void TSSEvaluator::elog(const std::string &m) const {
     time_t now = time(nullptr);
     auto now_tm = localtime(&now);
     strftime(timestring, 70, "ERROR : %c", now_tm);
-    free(now_tm);
-    logfile << timestring << m << '\n';
+    logfile << timestring << '\t' << m << '\n';
 }
 
 void TSSEvaluator::mlog(const std::string &m) const {

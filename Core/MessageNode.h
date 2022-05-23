@@ -33,6 +33,7 @@ public:
     void addResponse(MessageNode *);
     MessageNode *getResponses() const noexcept;
     MessageNode *getLastResponse() const noexcept;
+    bool removeResponse(MessageNode *); // doesn't free memory
 
     time_t getTimestamp() const noexcept;
 

@@ -14,4 +14,4 @@ with open(dataCSVPath, 'r') as infile:
             if (line[0] == 'id'):
                 csv_writer.writerow(['id','rate'])
             else:
-                csv_writer.writerow([line[0], round(pow(random.random(),2), 5)])
+                csv_writer.writerow([line[0], .2])

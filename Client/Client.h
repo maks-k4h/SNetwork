@@ -11,17 +11,17 @@
 
 class Client {
 public:
-    Client() = default;
+    Client(Server &);
     Client(const Client &) = default;
     ~Client() = default;
 
     void run();
 private:
-    Server server;
+    Server &server;
     bool running {false};
     std::vector<Message> messagesStack;
 
-    void prepareData();
+    void updateMessageStack();
 
     enum class Command {
         HELP_,

@@ -17,9 +17,9 @@ MessageNode::MessageNode(const MessageID &id, const std::string &str)
 
 
 void MessageNode::setNextMessage(MessageNode *message) {
-    if (!message)
-        return;
     next = message;
+    if (!next)
+        return;
     if (id.isEmpty())
         return;
     next->id = id;
@@ -54,6 +54,7 @@ void MessageNode::addResponse(MessageNode *newResponse) {
     newResponse->setId(newId);
     if (responsesBegin) {
         responsesTail->next = newResponse;
+        responsesTail->next->previous = responsesTail;
         responsesTail = responsesTail->next;
     } else {
         responsesBegin = responsesTail = newResponse;
@@ -91,19 +92,44 @@ bool MessageNode::setTextSpamScore(double s) noexcept {
     if (s < TSS_MIN || s > TSS_MAX)
         return false;
     tss = s;
+    return true;
 }
 
 double MessageNode::getTextSpamScore() const noexcept {
     return tss;
 }
 
-double MessageNode::calculateScore() const noexcept {
-    return tanh(tss / sqrt(FL_MU + static_cast<double>(getLikes())))
-        + tss;
+double MessageNode::calculateRate() const noexcept {
+    return tanh(FL_MU * static_cast<double>(reportsNumber)
+        / (1 + static_cast<double>(getLikes()))) + tss;
 }
 
 bool MessageNode::isSpamMessage() const noexcept {
-    return calculateScore() >= FL_H;
+    return calculateRate() >= FL_H;
+}
+
+bool MessageNode::removeResponse(MessageNode *rp) {
+    // checking if such a response exist
+    auto curr = responsesBegin;
+    while (curr && curr != rp)
+        curr = curr->next;
+    if (!curr)
+        return false;
+
+    --responsesNum;
+    if (curr->previous) {
+        curr->previous->next = curr->next;
+    } else {
+        responsesBegin = curr->next;
+    }
+
+    if (curr->next) {
+        curr->next->previous = curr->previous;
+    } else {
+        responsesTail = curr->previous;
+    }
+
+    return true;
 }
 
 

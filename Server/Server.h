@@ -4,9 +4,11 @@
 
 #include "../Core/MessageNode.h"
 
+#include <list>
+
 class Server {
 public:
-    Server() = default;
+    Server();
     Server(const Server &) = default;
     ~Server();
 
@@ -15,6 +17,7 @@ public:
     // called by destructor, though can be called manually
     void cleanData();
 
+    bool getFirstPost(Message &) const noexcept;
     bool getMessageById(const MessageID &, Message &m) const;
     bool getNextMessage(const MessageID &, Message &m) const;
     bool getPreviousMessage(const MessageID &, Message &m) const;
@@ -29,11 +32,18 @@ public:
 
     bool addReport(const MessageID &);
 
+    const std::list<MessageID> &getUnrated() const;
+    bool setRate(const MessageID &, double);
+
 private:
     // nullptr on fail
     MessageNode *messageById(const MessageID &) const;
     void deleteMessage(MessageNode *);
+
+    void processSpam(MessageNode *);
     MessageNode *data {nullptr};
+
+    std::list<MessageID> unrated;
 };
 
 

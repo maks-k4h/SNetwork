@@ -6,8 +6,8 @@
 
 #include <ctime>
 
-constexpr double FL_MU {5};
-constexpr double FL_H {0.95};
+constexpr double FL_MU {2};
+constexpr double FL_H {0.98};
 constexpr double TSS_MAX {1}; // text spam score max
 constexpr double TSS_MIN {0}; // text spam score min
 
@@ -25,6 +25,7 @@ public:
     // may change id
     void setNextMessage(MessageNode *);
     MessageNode *getNextMessage() const noexcept;
+
     void setPreviousMessage(MessageNode *);
     MessageNode *getPreviousMessage() const noexcept;
 
@@ -32,6 +33,7 @@ public:
     void addResponse(MessageNode *);
     MessageNode *getResponses() const noexcept;
     MessageNode *getLastResponse() const noexcept;
+    bool removeResponse(MessageNode *); // doesn't free memory
 
     time_t getTimestamp() const noexcept;
 
@@ -41,7 +43,7 @@ public:
     bool setTextSpamScore(double) noexcept;
     double getTextSpamScore() const noexcept;
 
-    double calculateScore() const noexcept;
+    double calculateRate() const noexcept;
     bool isSpamMessage() const noexcept;
 
 private:

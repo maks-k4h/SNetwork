@@ -81,5 +81,29 @@ MessageID &MessageID::operator--() noexcept {
 }
 
 
+// return characters done
+// important :
+// ---  is 0-0-0-0
+// --1- is 0-0-1-0
+// 1--1 is 1-0-1
+// ...............
+
+int MessageID::fromString(const std::string &s) {
+    data.clear();
+    if (s.empty() || !isdigit(s[0]))
+        return 0;
+    data.push_back(0);
+    int count {};
+    while (count < s.size() && s[count] == '-' || isdigit(s[count])) {
+        if (s[count] == '-') {
+            addLevel(0);
+        } else {
+            *(data.end()-1) = 10 * *(data.end()-1) + s[count] - '0';
+        }
+        ++count;
+    }
+}
+
+
 
 

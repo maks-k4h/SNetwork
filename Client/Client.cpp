@@ -5,10 +5,12 @@
 #include "Client.h"
 #include <iostream>
 
+Client::Client(Server &s)
+: server{s} {}
+
 void Client::run() {
     // preparing data
-    server.loadData();
-    prepareData();
+    updateMessageStack();
     // running the client
     running = true;
     printHelloMessage();
@@ -19,10 +21,22 @@ void Client::run() {
     }
 }
 
-void Client::prepareData() {
-    Message message;
-    if (server.getMessageById(0, message))
-        messagesStack.emplace_back(std::move(message));
+void Client::updateMessageStack() {
+    while (!messagesStack.empty()) {
+        // updating message
+        if (!server.getMessageById((messagesStack.end() - 1)->getId(),
+                              *(messagesStack.end() - 1))) {
+            messagesStack.erase(messagesStack.end() - 1);
+        } else break;
+    }
+    if (messagesStack.empty()) {
+        Message message;
+        if (server.getFirstPost(message)) {
+            messagesStack.emplace_back(std::move(message));
+        } else {
+            // no messages to show
+        }
+    }
 }
 
 
@@ -200,11 +214,10 @@ void Client::doComment() {
             } else {
                 Message commentMessage;
                 if (!server.getMessageById(resID, commentMessage)) {
-                    std::cout << "Something went wrong!\n";
+                    printSWWMessage();
+                    updateMessageStack();
                 } else {
-                    server.getMessageById(
-                            (messagesStack.end() - 1)->getId(),
-                            *(messagesStack.end() - 1));
+                    updateMessageStack();
                     messagesStack.emplace_back(std::move(commentMessage));
                     renderPostPage();
                 }
@@ -252,7 +265,8 @@ void Client::doPost() {
 
 void Client::doNext() {
     if (messagesStack.empty()) {
-        std::cout << "No posts yet.\n";
+        updateMessageStack();
+        renderPostPage();
         return;
     }
 
@@ -283,12 +297,12 @@ void Client::doLike() {
         std::cout << "Nothing to like...\n";
         return;
     }
-    if (!server.addLike((messagesStack.end() - 1)->getId()) ||
-        !server.getMessageById((messagesStack.end() - 1)->getId(),
-                                    *(messagesStack.end() - 1)))
+    if (!server.addLike((messagesStack.end() - 1)->getId()))
         printSWWMessage();
-    else
+    else {
+        updateMessageStack();
         renderPostPage();
+    }
 }
 
 void Client::doDislike() {
@@ -297,12 +311,11 @@ void Client::doDislike() {
         return;
     }
     if (!server.addDislike((messagesStack.end() - 1)->getId()))
-        std::cout << "Something went wrong.\n";
-    else if (!server.getMessageById((messagesStack.end() - 1)->getId(),
-                                   *(messagesStack.end() - 1)))
         printSWWMessage();
-    else
+    else {
+        printSWWMessage();
         renderPostPage();
+    }
 }
 
 void Client::doReport() {
@@ -311,13 +324,23 @@ void Client::doReport() {
         return;
     }
     if (!server.addReport((messagesStack.end() - 1)->getId()))
-        std::cout << "Something went wrong.\n";
-    else
+        printSWWMessage();
+    else {
         std::cout << "Message was successfully reported!\n";
+        updateMessageStack();
+        renderPostPage();
+    }
 }
 
 void Client::printHelloMessage() const {
-    std::cout << "Hello there! Type 'help' if you need more info.\n";
+    std::cout <<
+    "   S S S     S         S   S S S S S   S S S S S  \n" <<
+    " S       S   S S       S   S               S      \n" <<
+    " S S         S   S     S   S S S S         S      \n" <<
+    "       S S   S     S   S   S               S      \n" <<
+    " S       S   S       S S   S               S      \n" <<
+    "   S S S     S         S   S S S S S       S    o \n";
+    std::cout << "\nHi! Type 'help' if you need more info.\n\n";
 }
 
 void Client::printHelpMessage() const {
@@ -352,6 +375,8 @@ void Client::printCharLine(char ch, int n) const {
     while (0 < n--)
         std::cout.put(ch);
 }
+
+
 
 
 
